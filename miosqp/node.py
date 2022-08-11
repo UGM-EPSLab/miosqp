@@ -138,6 +138,8 @@ class Node(object):
             #  if any(self.x[i_idx] > self.u[-n_int:]):
             #      import ipdb; ipdb.set_trace()
 
+            # TODO: Add new protection that the resulted x must be feasible (Ax <= b) before updating self.lower
+
             # Update objective value of relaxed problem (lower bound)
             self.lower = self.data.compute_obj_val(self.x)
 
