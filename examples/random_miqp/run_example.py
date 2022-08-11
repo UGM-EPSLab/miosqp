@@ -24,6 +24,14 @@ except NameError:
 reload(miosqp)
 
 
+# NOTE:
+# To exit from ipdb, use:
+#   (ipdb) ipdb.set_trace = lambda: None  # This replaces the set_trace() function!
+#   (ipdb) continue  # No more breaks!
+
+# TODO:
+# Compare solutions
+
 def solve(n_vec, m_vec, p_vec, repeat, dns_level, seed, solver='gurobi'):
     """
     Solve random optimization problems
@@ -93,31 +101,12 @@ def solve(n_vec, m_vec, p_vec, repeat, dns_level, seed, solver='gurobi'):
                 solve_time_temp[j] = 1e3 * res_gurobi.cputime
 
             elif solver == 'miosqp':
-                # Define problem settings
-                miosqp_settings = {
-                    # integer feasibility tolerance
-                    'eps_int_feas': 1e-03,
-                    # maximum number of iterations
-                    'max_iter_bb': 1000,
-                    # tree exploration rule
-                    #   [0] depth first
-                    #   [1] two-phase: depth first until first incumbent and then  best bound
-                    'tree_explor_rule': 1,
-                    # branching rule
-                    #   [0] max fractional part
-                    'branching_rule': 0,
-                    'verbose': False,
-                    'print_interval': 1}
-
-                osqp_settings = {'eps_abs': 1e-03,
-                                 'eps_rel': 1e-03,
-                                 'eps_prim_inf': 1e-04,
-                                 'verbose': False}
+                from miosqp.default_settings import MIOSQP_SETTINGS, OSQP_SETTINGS
 
                 model = miosqp.MIOSQP()
                 model.setup(P, q, A, l, u, i_idx, i_l, i_u,
-                            miosqp_settings,
-                            osqp_settings)
+                            MIOSQP_SETTINGS,
+                            OSQP_SETTINGS)
                 res_miosqp = model.solve()
 
                 # DEBUG (check if solutions match)
@@ -223,3 +212,12 @@ def run_example():
     f = open('results/random_miqp.tex', 'w')
     f.write(latex_table)
     f.close()
+
+
+if __name__ == "__main__":
+    import os
+
+    if not os.path.isdir(os.path.join(os.getcwd(), 'results')):
+        os.makedirs(os.path.join(os.getcwd(), 'results'))
+
+    run_example()
