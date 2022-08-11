@@ -111,7 +111,7 @@ class MIOSQP(object):
             #     import pdb; pdb.set_trace()
 
             # 3) Bound and Branch
-            if not (leaf.x is None).any():
+            if None not in leaf.x:
                 work.bound_and_branch(leaf)
 
                 if ((work.iter_num % (work.settings['print_interval']) == 0)
