@@ -90,7 +90,12 @@ class MIOSQP(object):
             leaf = work.choose_leaf(work.settings['tree_explor_rule'])
 
             # 2) Solve relaxed problem in leaf
-            leaf.solve()
+            # NOTE: This try block can be removed if leaf.l > leaf.u handled properly in workspace
+            try:
+                leaf.solve()
+            except ValueError:
+                # excape from bounds error
+                pass
 
             # Check if maximum number of iterations reached
             # if (leaf.status == work.solver.constant('OSQP_MAX_ITER_REACHED')):
