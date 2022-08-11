@@ -1,6 +1,6 @@
 MIOSQP_SETTINGS = {
     'eps_int_feas': 1e-02,   # integer feasibility tolerance
-    'max_iter_bb': 2000,     # maximum number of iterations
+    'max_iter_bb': 1000,     # maximum number of iterations
     'tree_explor_rule': 1,   # tree exploration rule
                              #   [0] depth first
                              #   [1] two-phase: depth first  until first incumbent and then  best bound
