@@ -126,6 +126,15 @@ class Workspace(object):
         Choose next leaf to branch from the ones that can still be expanded
         depending on branch_rule
         """
+        leaf = self._choose_leaf(tree_explor_rule)
+
+        while (leaf.l > leaf.u).any():
+            leaf = self._choose_leaf(tree_explor_rule)
+
+        return leaf
+
+    def _choose_leaf(self, tree_explor_rule):
+        # TODO: Cleans leaf.l > leaf.u here
         if tree_explor_rule == 0:
             # Depth first: Choose leaf with highest depth
             leaf_idx = np.argmax([leaf.depth for leaf in self.leaves])
@@ -138,9 +147,13 @@ class Workspace(object):
                 leaf_idx = np.argmax([leaf.depth for leaf in self.leaves])
             else:
                 # Second phase
+                leaf_idx = np.argmax([leaf.lower for leaf in self.leaves])
+                # TODO:
+                # Check below updates, because currently is not working
+                # Based on node.py that trying to minimize leaf.lower, np.argmin should be better
                 # patch argmax to argmin
                 # See: https://github.com/osqp/miosqp/issues/12
-                leaf_idx = np.argmin([leaf.lower for leaf in self.leaves])
+                # leaf_idx = np.argmin([leaf.lower for leaf in self.leaves])
         else:
             raise ValueError('Tree exploring strategy not recognized')
 
