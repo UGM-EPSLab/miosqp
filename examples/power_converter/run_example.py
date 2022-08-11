@@ -4,6 +4,8 @@ Simulate inverter model with ADP formulation from the paper
 
 """
 
+# Import plotting library
+import matplotlib.pylab as plt
 # Import numpy
 import numpy as np
 import pandas as pd
@@ -11,8 +13,6 @@ import pandas as pd
 # Power converter model files
 from .power_converter import Model
 
-# Import plotting library
-import matplotlib.pylab as plt
 colors = {'b': '#1f77b4',
           'g': '#2ca02c',
           'o': '#ff7f0e'}
@@ -91,7 +91,7 @@ def run_example():
     # Simulate model
     for i in range(len(N_adp)):
 
-        stats_gurobi = model.simulate_cl(N_adp[i], flag_steady_trans, 
+        stats_gurobi = model.simulate_cl(N_adp[i], flag_steady_trans,
                                          solver='gurobi')
 
         gurobi_std_time[i] = stats_gurobi.std_solve_time
@@ -105,7 +105,7 @@ def run_example():
         else:
             plot_flag = 0
 
-        stats_miosqp = model.simulate_cl(N_adp[i], flag_steady_trans, 
+        stats_miosqp = model.simulate_cl(N_adp[i], flag_steady_trans,
                                          solver='miosqp', plot=plot_flag)
 
         miosqp_std_time[i] = stats_miosqp.std_solve_time
@@ -148,4 +148,3 @@ def run_example():
     plt.tight_layout()
     # plt.show()
     plt.savefig('results/power_converter_timings.pdf')
-

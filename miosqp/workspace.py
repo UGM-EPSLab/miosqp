@@ -392,7 +392,8 @@ class Workspace(object):
         if self.upper_glob == np.inf:
             gap = "    --- "
         else:
-            gap = "%8.2f%%" % ((self.upper_glob - self.lower_glob) / abs(self.lower_glob) * 100)
+            gap = "%8.2f%%" % ((self.upper_glob - self.lower_glob) /
+                               abs(self.lower_glob) * 100)
 
         if (leaf.status == osqp.constant('OSQP_PRIMAL_INFEASIBLE')
                 or leaf.status == osqp.constant('OSQP_DUAL_INFEASIBLE')):

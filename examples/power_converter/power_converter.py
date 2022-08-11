@@ -1,22 +1,20 @@
-import numpy as np
-import numpy.linalg as nla
-import scipy.linalg as sla
 import math
-from ..power_converter import utils 
-
-# Import progress bar
-from tqdm import tqdm
 
 # Import mathprogbasepy
 import mathprogbasepy as mpbpy
+import numpy as np
+import numpy.linalg as nla
+import scipy.linalg as sla
+# Import progress bar
+from tqdm import tqdm
 
 # import miosqp solver
 import miosqp
 
-
+from ..power_converter import utils
+from .quadratic_program import MIQP
 # Internal functions and objects
 from .tail_cost import TailCost
-from .quadratic_program import MIQP
 
 
 class Statistics(object):
@@ -150,7 +148,7 @@ class DynamicalSystem(object):
         M[0, :] = np.hstack(
             (-np.ones((1, 9)), np.zeros((1, 9)), np.ones((1, 9))))
         M[1, :] = np.tile(np.hstack((-np.ones((1, 3)), np.zeros((1, 3)),
-                                     np.ones((1, 3)))), (1, 3))
+                                    np.ones((1, 3)))), (1, 3))
         M[2, :] = np.tile(np.array([-1, 0, 1]), (1, 9))
 
         '''
@@ -221,7 +219,7 @@ class InitialConditions(object):
         """
 
         # Get parameters
-        Rs = params.Rs
+        params.Rs
         Rr = params.Rr
         Xss = params.Xs
         Xrr = params.Xr
@@ -237,15 +235,15 @@ class InitialConditions(object):
         psiRb = -T / psiS_mag * D / Xm / kT
         dis = np.sqrt((Xm**2) * (psiSa**2) - 4. * (Xss**2) * (psiRb**2))
         psiRa1 = (Xm * psiSa + dis) / (2. * Xss)
-        psiRa2 = (Xm * psiSa - dis) / (2 * Xss)
+        (Xm * psiSa - dis) / (2 * Xss)
 
         psiRa = psiRa1  # make sure that this is always the correct choice!
 
         # Slip frequency
-        ws = -Rr * Xss / D * psiRb / psiRa
+        -Rr * Xss / D * psiRb / psiRa
 
         # Build stator and rotor flux vectors
-        PsiS = np.array([psiSa,  psiSb])
+        PsiS = np.array([psiSa, psiSb])
         PsiR = np.array([psiRa, psiRb])
 
         # Initialize the transformation matrix M
@@ -447,28 +445,14 @@ class Model(object):
         elif solver == 'miosqp':
 
             if self.solver is None:
-                # Define problem settings
-                miosqp_settings = {'eps_int_feas': 1e-02,   # integer feasibility tolerance
-                                   'max_iter_bb': 2000,     # maximum number of iterations
-                                   'tree_explor_rule': 1,   # tree exploration rule
-                                                            #   [0] depth first
-                                                            #   [1] two-phase: depth first  until first incumbent and then  best bound
-                                   'branching_rule': 0,     # branching rule
-                                                            #   [0] max fractional part
-                                   'verbose': False,
-                                   'print_interval': 1}
+                from miosqp.default_settings import MIOSQP_SETTINGS, OSQP_SETTINGS
 
-                osqp_settings = {'eps_abs': 1e-03,
-                                 'eps_rel': 1e-03,
-                                 'eps_prim_inf': 1e-04,
-                                 #  'rho': 0.001,
-                                 #  'rho': 0.1,
-                                 'verbose': False}
+                # Define problem settings
                 self.solver = miosqp.MIOSQP()
                 self.solver.setup(qp.P, q, qp.A, qp.l,
                                   qp.u, qp.i_idx, qp.i_l, qp.i_u,
-                                  miosqp_settings,
-                                  osqp_settings)
+                                  MIOSQP_SETTINGS,
+                                  OSQP_SETTINGS)
             else:
                 self.solver.update_vectors(q, qp.l, qp.u)
 
@@ -487,11 +471,11 @@ class Model(object):
             # if np.linalg.norm(res_miosqp.x - res_gurobi.x)> 1e-02:
             #     print("Norm of difference of solution = %.4e" % \
             #           np.linalg.norm(res_miosqp.x - res_gurobi.x))
-                # import ipdb; ipdb.set_trace()
-
+            # import ipdb; ipdb.set_trace()
 
             if res_miosqp.status != miosqp.MI_SOLVED:
-                import ipdb; ipdb.set_trace()
+                import ipdb
+                ipdb.set_trace()
             u = res_miosqp.x
             obj_val = res_miosqp.upper_glob
             solve_time = res_miosqp.run_time
@@ -502,8 +486,8 @@ class Model(object):
 
         if solver == 'miosqp':
             return u0, obj_val, solve_time, u, \
-                    osqp_solve_time, \
-                    res_miosqp.osqp_iter_avg
+                osqp_solve_time, \
+                res_miosqp.osqp_iter_avg
         else:
             return u0, obj_val, solve_time, u, 0, 0
 
@@ -564,7 +548,7 @@ class Model(object):
 
         for i in range(init_periods * Nstpp, T_final):
             # Compute ON transitions for each stage of the simulation
-            N_sw += utils.compute_on_transitions(U[:3, i], U[:3, i-1])
+            N_sw += utils.compute_on_transitions(U[:3, i], U[:3, i - 1])
 
         freq_sw = N_sw / (1. / self.params.freq * sim_periods)
         fsw = np.mean(freq_sw)  # Compute average between 12 switches
@@ -635,7 +619,7 @@ class Model(object):
             # Store time if after the init periods
             if i >= self.time.init_periods * self.time.Nstpp:
                 solve_times[i - self.time.init_periods * self.time.Nstpp] = \
-                        time_temp
+                    time_temp
 
             # Simulate one step
             X[:, i + 1], Y[:, i] = self.simulate_one_step(X[:, i], U[:, i])
@@ -649,7 +633,7 @@ class Model(object):
                 miosqp_osqp_avg_time += osqp_time
 
         if solver == 'miosqp':
-            # Divide total number of average OSQP iterations 
+            # Divide total number of average OSQP iterations
             # and solve time by time steps
             miosqp_avg_osqp_iter /= T_final
             miosqp_osqp_avg_time /= T_final

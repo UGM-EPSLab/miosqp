@@ -1,8 +1,9 @@
 """
 Compute or load tail cost of
 """
-import scipy.io as sio
 import numpy as np
+import scipy.io as sio
+
 
 class TailCost(object):
     def __init__(self, dyn_system, gamma):
@@ -13,7 +14,7 @@ class TailCost(object):
         self.gamma = gamma
 
     def load(self, name):
-        tail_mat = sio.loadmat('examples/power_converter/tail_backups/'+name)
+        tail_mat = sio.loadmat('examples/power_converter/tail_backups/' + name)
         self.P0 = tail_mat['P0']
         self.q0 = tail_mat['q0']
         self.r0 = tail_mat['r0']
@@ -25,7 +26,6 @@ class TailCost(object):
 
         # Load samples mean and variance
         # TODO: Complete
-
 
         # Compute ADP tail by solving an SDP
         # TODO: Complete

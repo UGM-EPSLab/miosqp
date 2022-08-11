@@ -8,6 +8,7 @@ class MIQP(object):
     """
     Mixed-Integer Quadratic Program matrices and vectors
     """
+
     def __init__(self, dyn_system, N, tail_cost):
         """
         Generate matrices in for QP solvers
@@ -103,7 +104,7 @@ class MIQP(object):
         #  u_sw_idx = np.flatnonzero(u_sw_idx)
         #  qp_A, qp_l, qp_u = self.add_bounds(u_sw_idx, -1., 1.,
         #                                     qp_A, qp_l, qp_u)
-       
+
         # SA_tilde needed to update bounds
         qp_SA_tilde = S.dot(A_tilde)
 

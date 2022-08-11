@@ -1,20 +1,19 @@
 """
 Solve MIQP using mathprogbasepy
 """
-from __future__ import division
-from __future__ import print_function
-from builtins import range
-import scipy as sp
-import scipy.sparse as spa
-import numpy as np
-import pandas as pd
+from __future__ import division, print_function
 
+from builtins import range
 
 import mathprogbasepy as mpbpy
-import miosqp
-
+import numpy as np
+import pandas as pd
+import scipy as sp
+import scipy.sparse as spa
 # Import progress bar
 from tqdm import tqdm
+
+import miosqp
 
 # Reload miosqp module
 try:
@@ -65,7 +64,7 @@ def solve(n_vec, m_vec, p_vec, repeat, dns_level, seed, solver='gurobi'):
             osqp_solve_time_temp = np.zeros(repeat)
 
         for j in tqdm(range(repeat)):
-        #  for j in range(repeat):
+            #  for j in range(repeat):
 
             # Generate random vector of indeces
             i_idx = np.random.choice(np.arange(0, n), p, replace=False)
@@ -96,19 +95,19 @@ def solve(n_vec, m_vec, p_vec, repeat, dns_level, seed, solver='gurobi'):
             elif solver == 'miosqp':
                 # Define problem settings
                 miosqp_settings = {
-                                   # integer feasibility tolerance
-                                   'eps_int_feas': 1e-03,
-                                   # maximum number of iterations
-                                   'max_iter_bb': 1000,
-                                   # tree exploration rule
-                                   #   [0] depth first
-                                   #   [1] two-phase: depth first until first incumbent and then  best bound
-                                   'tree_explor_rule': 1,
-                                   # branching rule
-                                   #   [0] max fractional part
-                                   'branching_rule': 0,
-                                   'verbose': False,
-                                   'print_interval': 1}
+                    # integer feasibility tolerance
+                    'eps_int_feas': 1e-03,
+                    # maximum number of iterations
+                    'max_iter_bb': 1000,
+                    # tree exploration rule
+                    #   [0] depth first
+                    #   [1] two-phase: depth first until first incumbent and then  best bound
+                    'tree_explor_rule': 1,
+                    # branching rule
+                    #   [0] max fractional part
+                    'branching_rule': 0,
+                    'verbose': False,
+                    'print_interval': 1}
 
                 osqp_settings = {'eps_abs': 1e-03,
                                  'eps_rel': 1e-03,
@@ -133,8 +132,8 @@ def solve(n_vec, m_vec, p_vec, repeat, dns_level, seed, solver='gurobi'):
                 if res_miosqp.status != miosqp.MI_SOLVED:
                     import ipdb
                     ipdb.set_trace()
-                
-                # Solution time 
+
+                # Solution time
                 solve_time_temp[j] = 1e3 * res_miosqp.run_time
 
                 # Store OSQP time in percentage
@@ -179,9 +178,9 @@ def run_example():
     random_seed = 0             # set random seed to make results reproducible
 
     if problem_set == 1:
-        n_arr = np.array([10, 10,  50, 50,  100, 100, 150, 150])
-        m_arr = np.array([5,  100, 25, 200, 50,  200, 100, 300])
-        p_arr = np.array([2,  2,   5,  10,  2,   15,  5,   20])
+        n_arr = np.array([10, 10, 50, 50, 100, 100, 150, 150])
+        m_arr = np.array([5, 100, 25, 200, 50, 200, 100, 300])
+        p_arr = np.array([2, 2, 5, 10, 2, 15, 5, 20])
 
     # Other problems n = q
     elif problem_set == 2:
@@ -216,7 +215,9 @@ def run_example():
     print(comparison_table)
 
     # Converting results to latex table and storing them to a file
-    formatter = lambda x: '%1.2f' % x
+    def formatter(x):
+        return '%1.2f' % x
+
     latex_table = comparison_table.to_latex(header=False, index=False,
                                             float_format=formatter)
     f = open('results/random_miqp.tex', 'w')

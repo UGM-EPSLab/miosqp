@@ -1,14 +1,14 @@
-import osqp
-# import osqppurepy as osqp
-
 # Read max_iter_problems from files
 import pickle
-from os import listdir
+
+import osqp
+
+# import osqppurepy as osqp
+
 # from os.path import splitext
 
 
 # Solve problem with another solver
-import mathprogbasepy as mpbpy
 
 # Lead maxiter problems
 # list_dir = listdir('./max_iter_examples')
