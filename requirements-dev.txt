@@ -1,0 +1,10 @@
+osqp
+numpy>=1.9
+scipy>=0.15
+
+ipdb
+gurobi
+
+pytest
+pytest-cov
+pytest-xdist
