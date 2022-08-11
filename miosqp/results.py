@@ -2,6 +2,7 @@ class Results(object):
     """
     MIOSQP Results
     """
+
     def __init__(self, x, upper_glob, run_time, status,
                  osqp_solve_time, osqp_iter_avg):
         self.x = x

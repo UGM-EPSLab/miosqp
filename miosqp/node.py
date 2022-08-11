@@ -125,15 +125,14 @@ class Node(object):
         self.y = results.y
 
         # Enforce integer variables to be exactly within the bounds
-        if self.status == osqp.constant('OSQP_SOLVED') or \
-                self.status == osqp.constant('OSQP_MAX_ITER_REACHED'):
+        if (self.status == osqp.constant('OSQP_SOLVED')
+                or self.status == osqp.constant('OSQP_MAX_ITER_REACHED')):
             #  import ipdb; ipdb.set_trace()
             n_int = self.data.n_int
             i_idx = self.data.i_idx
-            self.x[i_idx] = \
-                np.minimum(np.maximum(self.x[i_idx],
-                                      self.l[-n_int:]),
-                           self.u[-n_int:])
+            self.x[i_idx] = np.minimum(np.maximum(self.x[i_idx],
+                                                  self.l[-n_int:]),
+                                       self.u[-n_int:])
             #  if any(self.x[i_idx] < self.l[-n_int:]):
             #      import ipdb; ipdb.set_trace()
             #  if any(self.x[i_idx] > self.u[-n_int:]):
@@ -144,4 +143,3 @@ class Node(object):
 
         #  # Get lower bound (objective value of relaxed problem)
         #  self.lower = results.info.obj_val
-

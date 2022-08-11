@@ -5,20 +5,21 @@ Solve Mixed-Integer QPs using Branch and Bound and OSQP Solver
 Written by Bartolomeo Stellato, February 2017, University of Oxford
 """
 
-from __future__ import print_function, division
+from __future__ import division, print_function
+
 from builtins import object
-# import osqppurepy as osqp # Import OSQP Solver implementation in Pure Python
-import numpy as np
 # import numpy.linalg as la
 from time import time
 
+# import osqppurepy as osqp # Import OSQP Solver implementation in Pure Python
+import numpy as np
 
+from .constants import MI_UNSOLVED
 # Import data
-from miosqp.data import Data
-from miosqp.workspace import Workspace
-from miosqp.results import Results
-from miosqp.node import Node
-from miosqp.constants import MI_UNSOLVED
+from .data import Data
+from .node import Node
+from .results import Results
+from .workspace import Workspace
 
 # Dump max_iter_problems to files
 # import pickle
@@ -33,6 +34,7 @@ class MIOSQP(object):
     """
     MIOSQP Solver class
     """
+
     def __init__(self):
         self.data = None
         self.work = None
@@ -92,33 +94,33 @@ class MIOSQP(object):
 
             # Check if maximum number of iterations reached
             # if (leaf.status == work.solver.constant('OSQP_MAX_ITER_REACHED')):
-                # print("ERROR: Max Iter Reached!")
-                # # Dump file to 'max_iter_examples'folder
-                # problem = {'P': work.data.P,
-                #            'q': work.data.q,
-                #            'A': work.data.A,
-                #            'l': leaf.l,
-                #            'u': leaf.u,
-                #            'i_idx': work.data.i_idx,
-                #            'settings': work.qp_settings}
-                # # Get new filename
-                # list_dir = listdir('./max_iter_examples')
-                # last_name = int(splitext(list_dir[-1])[0])
-                # with open('max_iter_examples/%s.pickle' % str(last_name + 1), 'wb') as f:
-                #     pickle.dump(problem, f)
-                # import pdb; pdb.set_trace()
+            #     print("ERROR: Max Iter Reached!")
+            #     # Dump file to 'max_iter_examples'folder
+            #     problem = {'P': work.data.P,
+            #             'q': work.data.q,
+            #             'A': work.data.A,
+            #             'l': leaf.l,
+            #             'u': leaf.u,
+            #             'i_idx': work.data.i_idx,
+            #             'settings': work.qp_settings}
+            #     # Get new filename
+            #     list_dir = listdir('./max_iter_examples')
+            #     last_name = int(splitext(list_dir[-1])[0])
+            #     with open('max_iter_examples/%s.pickle' % str(last_name + 1), 'wb') as f:
+            #         pickle.dump(problem, f)
+            #     import pdb; pdb.set_trace()
 
             # 3) Bound and Branch
-            if not (leaf.x == None).any():
+            if not (leaf.x is None).any():
                 work.bound_and_branch(leaf)
 
-                if (work.iter_num % (work.settings['print_interval']) == 0) and \
-                        work.settings['verbose']:
+                if ((work.iter_num % (work.settings['print_interval']) == 0)
+                        and work.settings['verbose']):
                     # Print progress
                     work.print_progress(leaf)
 
             # Delete leaf object
-            del(leaf)
+            del leaf
 
             # Update iteration number
             work.iter_num += 1
@@ -159,8 +161,8 @@ class MIOSQP(object):
 
         if self.work.first_run:
             self.work.first_run = 0
-            self.work.run_time = self.work.setup_time + \
-                self.work.solve_time
+            self.work.run_time = (self.work.setup_time
+                                  + self.work.solve_time)
         else:
             self.work.run_time = self.work.solve_time
 

@@ -1,18 +1,13 @@
 from __future__ import print_function
 
 import numpy as np
-
 # Import osqp solver
 import osqp
 
 # Miosqp files
-from miosqp.node import Node
-from miosqp.constants import MI_UNSOLVED, \
-                             MI_PRIMAL_INFEASIBLE, \
-                             MI_DUAL_INFEASIBLE, \
-                             MI_SOLVED, \
-                             MI_MAX_ITER_FEASIBLE, \
-                             MI_MAX_ITER_UNSOLVED
+from .constants import (MI_DUAL_INFEASIBLE, MI_MAX_ITER_FEASIBLE, MI_MAX_ITER_UNSOLVED,
+                        MI_PRIMAL_INFEASIBLE, MI_SOLVED, MI_UNSOLVED)
+from .node import Node
 
 
 class Workspace(object):
@@ -55,6 +50,7 @@ class Workspace(object):
     x: numpy array
         current best solution
     """
+
     def __init__(self, data, settings, qp_settings=None):
         self.data = data
         self.settings = settings
@@ -101,8 +97,8 @@ class Workspace(object):
         root = self.leaves[0]
 
         # Add initial solution and objective value
-        if self.satisfies_lin_constraints(x0, root.l, root.u) and \
-                self.is_int_feas(x0, root):
+        if (self.satisfies_lin_constraints(x0, root.l, root.u)
+                and self.is_int_feas(x0, root)):
             self.x = x0
             self.upper_glob = self.data.compute_obj_val(x0)
         else:
@@ -165,8 +161,7 @@ class Workspace(object):
         u_left = np.copy(leaf.u)
 
         # x <= floor(x_relaxed)
-        u_left[leaf.constr_idx] = \
-            np.floor(leaf.x[leaf.nextvar_idx])
+        u_left[leaf.constr_idx] = np.floor(leaf.x[leaf.nextvar_idx])
 
         # DEBUG:
         # if any(l_left > u_left):
@@ -189,8 +184,7 @@ class Workspace(object):
         u_right = np.copy(leaf.u)
 
         # ceil(x_relaxed) <= x
-        l_right[leaf.constr_idx] = \
-            np.ceil(leaf.x[leaf.nextvar_idx])
+        l_right[leaf.constr_idx] = np.ceil(leaf.x[leaf.nextvar_idx])
 
         # DEBUG:
         # if any(l_right > u_right):
@@ -237,8 +231,8 @@ class Workspace(object):
         """
         # Check if it satisfies current l and u bounds
         z = self.data.A.dot(x)
-        if any(z < l - self.qp_settings['eps_abs']) | \
-                any(z > u + self.qp_settings['eps_abs']):
+        if (any(z < l - self.qp_settings['eps_abs'])
+                | any(z > u + self.qp_settings['eps_abs'])):
             return False
 
         # If we got here, it is integer feasible
@@ -253,8 +247,7 @@ class Workspace(object):
         x_int = x[self.data.i_idx]
 
         # Part of the solution that is still fractional
-        int_feas_false = abs(x_int - np.round(x_int)) >\
-            self.settings['eps_int_feas']
+        int_feas_false = abs(x_int - np.round(x_int)) > self.settings['eps_int_feas']
         # Index of frac parts
         leaf.frac_idx = np.where(int_feas_false)[0].tolist()
         # Store number of fractional elements (integer infeasible)
@@ -293,12 +286,14 @@ class Workspace(object):
         self.osqp_solve_time += leaf.osqp_solve_time
 
         # 1) If infeasible or unbounded, then return (prune)
-        if leaf.status == osqp.constant('OSQP_PRIMAL_INFEASIBLE') or \
-                leaf.status == osqp.constant('OSQP_DUAL_INFEASIBLE'):
+        if (leaf.status == osqp.constant('OSQP_PRIMAL_INFEASIBLE')
+                or leaf.status == osqp.constant('OSQP_DUAL_INFEASIBLE')):
+            # self.prune() # is it neaded?
             return
 
         # 2) If lower bound is greater than upper bound, then return (prune)
         if leaf.lower > self.upper_glob:
+            # self.prune() # is it neaded?
             return
 
         # 3) If integer feasible, then
@@ -379,11 +374,9 @@ class Workspace(object):
         Get exact mixed-integer solution
         """
 
-        if self.status == MI_SOLVED or \
-                self.status == MI_MAX_ITER_FEASIBLE:
+        if self.status == MI_SOLVED or self.status == MI_MAX_ITER_FEASIBLE:
             # Part of solution that is supposed to be integer
-            self.x[self.data.i_idx] = \
-                np.round(self.x[self.data.i_idx])
+            self.x[self.data.i_idx] = np.round(self.x[self.data.i_idx])
 
     def print_headline(self):
         """
@@ -399,11 +392,10 @@ class Workspace(object):
         if self.upper_glob == np.inf:
             gap = "    --- "
         else:
-            gap = "%8.2f%%" % \
-                ((self.upper_glob - self.lower_glob)/abs(self.lower_glob)*100)
+            gap = "%8.2f%%" % ((self.upper_glob - self.lower_glob) / abs(self.lower_glob) * 100)
 
-        if leaf.status == osqp.constant('OSQP_PRIMAL_INFEASIBLE') or \
-                leaf.status == osqp.constant('OSQP_DUAL_INFEASIBLE'):
+        if (leaf.status == osqp.constant('OSQP_PRIMAL_INFEASIBLE')
+                or leaf.status == osqp.constant('OSQP_DUAL_INFEASIBLE')):
             obj = np.inf
         else:
             obj = leaf.lower

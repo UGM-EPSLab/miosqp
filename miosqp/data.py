@@ -1,5 +1,5 @@
-import scipy.sparse as spa
 import numpy as np
+import scipy.sparse as spa
 
 
 def add_bounds(i_idx, l_new, u_new, A, l, u):
