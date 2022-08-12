@@ -128,8 +128,13 @@ class Workspace(object):
         """
         leaf = self._choose_leaf(tree_explor_rule)
 
+        # repick approach
         while (leaf.l > leaf.u).any():
             leaf = self._choose_leaf(tree_explor_rule)
+
+        # # swap approach
+        # swap_idx = np.where(leaf.l > leaf.u)[0]
+        # leaf.l[swap_idx], leaf.u[swap_idx] = leaf.u[swap_idx], leaf.l[swap_idx]
 
         return leaf
 
@@ -147,13 +152,13 @@ class Workspace(object):
                 leaf_idx = np.argmax([leaf.depth for leaf in self.leaves])
             else:
                 # Second phase
-                leaf_idx = np.argmax([leaf.lower for leaf in self.leaves])
+                # leaf_idx = np.argmax([leaf.lower for leaf in self.leaves])
                 # TODO:
                 # Check below updates, because currently is not working
                 # Based on node.py that trying to minimize leaf.lower, np.argmin should be better
                 # patch argmax to argmin
                 # See: https://github.com/osqp/miosqp/issues/12
-                # leaf_idx = np.argmin([leaf.lower for leaf in self.leaves])
+                leaf_idx = np.argmin([leaf.lower for leaf in self.leaves])
         else:
             raise ValueError('Tree exploring strategy not recognized')
 
