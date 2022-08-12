@@ -3,7 +3,7 @@ MIOSQP_SETTINGS = {
     'max_iter_bb': 1000,     # maximum number of iterations
     'tree_explor_rule': 1,   # tree exploration rule
                              #   [0] depth first
-                             #   [1] two-phase: depth first  until first incumbent and then  best bound
+                             #   [1] two-phase: depth first until first incumbent and then best bound
     'branching_rule': 0,     # branching rule
                              #   [0] max fractional part
     'verbose': False,
