@@ -1,3 +1,6 @@
+import os
+import re
+
 from setuptools import setup
 
 # This package is a fork from,
@@ -6,9 +9,18 @@ from setuptools import setup
 # Original owner: bartolomeo.stellato@gmail.com
 
 
+PACKAGE_NAME = 'miosqp'
+current_path = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(current_path, PACKAGE_NAME, '__init__.py'), "r") as f:
+    version_line = f.read()
+
+m = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_line, re.M)
+__version__ = m.group(1)
+
+
 setup(
-    name='miosqp',
-    version='0.0.1.1',
+    name=PACKAGE_NAME,
+    version=__version__,
     author='Muhammad Yasirroni',
     author_email='muhammadyasirroni@gmail.com',
     packages=['miosqp'],
