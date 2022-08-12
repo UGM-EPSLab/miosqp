@@ -14,9 +14,13 @@ current_path = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(current_path, PACKAGE_NAME, '__init__.py'), "r") as f:
     version_line = f.read()
 
-m = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_line, re.M)
-__version__ = m.group(1)
+m = re.search(r"^__MIOSQP_VERSION__ = ['\"]([^'\"]*)['\"]", version_line, re.M)
+__MIOSQP_VERSION__ = m.group(1)
 
+m = re.search(r"^__EPSLAB_FORK_VERSION__ = ['\"]([^'\"]*)['\"]", version_line, re.M)
+__EPSLAB_FORK_VERSION__ = m.group(1)
+
+__version__ = f"{__MIOSQP_VERSION__}.{__EPSLAB_FORK_VERSION__}"
 
 setup(
     name=PACKAGE_NAME,
